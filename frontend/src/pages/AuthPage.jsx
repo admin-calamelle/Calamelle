@@ -201,7 +201,6 @@ export default function AuthPage({ mode }) {
         </form>
         {isRegister && <div className="auth-email-note"><Mail size={15}/> Aucun compte ne sera créé avant la validation du code reçu par e-mail.</div>}
         <div className="auth-switch">{isRegister ? <>Déjà inscrit ? <Link to="/login">Se connecter</Link></> : <>Pas encore de compte ? <Link to="/register">Créer un compte</Link></>}</div>
-        {!isRegister && <div className="demo-box"><strong>Comptes de démonstration</strong><code>learner@calamelle.local / Learner123!</code><code>trainer@calamelle.local / Trainer123!</code><code>admin@calamelle.local / Admin123!</code></div>}
       </div>
     </div>
   );
