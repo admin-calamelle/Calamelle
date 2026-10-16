@@ -2,6 +2,7 @@
   "name": "calamelle-react-node",
   "private": true,
   "version": "2.3.7",
+  "type": "module",
   "description": "Calamelle full-stack learning application (React + Node.js)",
   "workspaces": [
     "frontend",
@@ -12,7 +13,10 @@
     "build": "npm --workspace frontend run build",
     "start": "npm --workspace backend run start",
     "prod": "npm run build && npm run start",
-    "reset-db": "npm --workspace backend run reset-db"
+    "reset-db": "npm --workspace backend run reset-db",
+    "db:setup": "npm --workspace backend run setup-db",
+    "db:migrate-sqlite": "npm --workspace backend run migrate-sqlite",
+    "vercel-build": "npm run build"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

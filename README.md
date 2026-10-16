@@ -13,7 +13,7 @@ The project currently includes:
 - Optimized WebP landing images and lightweight reveal/hover/floating animations.
 - React learner application with authentication and role-based routing.
 - Node.js / Express API.
-- SQLite persistence with no external database server required.
+- PostgreSQL persistence via `DATABASE_URL` (Vercel/Neon-ready).
 - Local IndexedDB learner progress support with Dexie.
 - Complete Calamelle QCM source bank packaged in the repository.
 - French language learning, spaced repetition, reviews and progress tracking.
@@ -41,7 +41,7 @@ The project currently includes:
 
 - Node.js 22.12+
 - Express 5
-- SQLite
+- PostgreSQL (`pg`)
 - JWT authentication
 - bcryptjs password hashing
 - Helmet and CORS
@@ -63,9 +63,10 @@ Calamelle/
 ├── backend/
 │   ├── data/
 │   │   ├── Calamelle_QCM_2741_FLAT.json
-│   │   └── calamelle.db
-│   └── src/                       # API, auth, access, DB, Stripe, e-mail
+│   │   └── calamelle.db             # legacy SQLite source kept for one-time migration
+│   └── src/                       # API, auth, PostgreSQL, migration, Stripe, e-mail
 ├── sample-data/                   # Example import data
+├── api/                           # Vercel serverless entry points
 ├── scripts/                       # Local development helpers
 ├── .env.example                   # Main environment template
 └── README.md                      # This single project document
@@ -327,7 +328,7 @@ Admin
 
 ## 15. Database
 
-SQLite stores the main application state. Important tables include:
+PostgreSQL stores the main application state. The schema lives in `backend/src/schema.sql`. Important tables include:
 
 - `users`
 - `auth_sessions`
@@ -473,15 +474,32 @@ SETUP_STRIPE.bat
 
 Use `sk_test_...` and test Price IDs first.
 
-## 19. Database reset
+## 19. PostgreSQL setup, migration and reset
 
-To recreate the local database:
+Create a PostgreSQL database first (Neon is a convenient option for Vercel), then set `DATABASE_URL`.
+
+For a brand-new empty database, install the schema and Calamelle question bank once:
 
 ```bash
-npm run reset-db
+npm run db:setup
 ```
 
-Restart the application after the reset.
+To copy the existing bundled SQLite database (`backend/data/calamelle.db`) into an empty PostgreSQL database:
+
+```bash
+npm run db:migrate-sqlite
+```
+
+The migration preserves users, questions, answers, progress, exams, courses, cohorts, settings, payments and the other application tables. It verifies key row counts after the copy. The target PostgreSQL database must be empty unless you explicitly run with `MIGRATION_TRUNCATE=true`.
+
+A PostgreSQL reset is intentionally protected:
+
+```bash
+CONFIRM_DB_RESET=yes npm run reset-db
+npm run db:setup
+```
+
+Do not run the reset command against a production database unless you intend to delete its Calamelle data.
 
 ## 20. Question import
 
@@ -520,8 +538,35 @@ Before production:
 - do not publish `.env` secrets;
 - review seeded/demo accounts before deployment.
 
+
+## 23. Vercel deployment
+
+This build includes `vercel.json` plus `api/index.js` and `api/[...path].js`. The React frontend is built to `frontend/dist`, while `/api/*` is served by the Express application as Vercel Functions.
+
+Recommended production flow:
+
+1. Create a PostgreSQL database (a pooled Neon connection URL is recommended for Vercel).
+2. Locally set `DATABASE_URL` to that database and run `npm run db:migrate-sqlite` once if you want to preserve the bundled SQLite data. For a completely fresh install use `npm run db:setup` instead.
+3. Push the project to GitHub and import it into Vercel.
+4. Add the production environment variables in Vercel, especially `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL`, Brevo SMTP variables and Stripe variables.
+5. Set `NODE_ENV=production`, `EXPOSE_DEV_OTP=false` and `ENABLE_DEMO_ACCESS_CODE=false`.
+6. Deploy, then configure the Stripe webhook to `https://YOUR_DOMAIN/api/stripe/webhook`.
+
+For serverless PostgreSQL connections keep the pool small (`PG_POOL_MAX=3` by default in the example). Use the provider's pooled connection string when one is available.
+
+### Required database variables
+
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
+PGSSL=true
+PG_POOL_MAX=3
+```
+
+The application no longer writes runtime state to `backend/data/calamelle.db`; that file is retained only as a migration source.
+
 ---
 
 This README intentionally replaces the previous version-by-version changelogs, QA reports and separate setup/architecture markdown files so the project has one current documentation source.
 #   C a l a m e l l e  
+ #   C a l a m e l l e  
  

@@ -17,6 +17,7 @@ export const config = {
   port: Number(process.env.PORT || 4000),
   jwtSecret: process.env.JWT_SECRET || 'calamelle-development-secret-change-me',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+  databaseUrl: process.env.DATABASE_URL || '',
 
   paymentsMode: process.env.PAYMENTS_MODE || 'demo',
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
@@ -60,6 +61,9 @@ export function assertProductionConfig() {
   if (nodeEnv !== 'production') return;
   if (!process.env.JWT_SECRET || config.jwtSecret === 'calamelle-development-secret-change-me' || config.jwtSecret.length < 32) {
     throw new Error('Production requires a strong JWT_SECRET (32+ characters).');
+  }
+  if (!config.databaseUrl) {
+    throw new Error('Production requires DATABASE_URL (PostgreSQL).');
   }
   if (!process.env.PAYMENTS_MODE) {
     throw new Error('Production requires PAYMENTS_MODE to be explicitly configured.');
