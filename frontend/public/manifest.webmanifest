@@ -1,0 +1,12 @@
+{
+  "name": "Calamelle",
+  "short_name": "Calamelle",
+  "description": "Le français, un mot à la fois.",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#f7f1e7",
+  "theme_color": "#5c0e14",
+  "icons": [
+    { "src": "/assets/calamelle-mark.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

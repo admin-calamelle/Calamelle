@@ -1,0 +1,22 @@
+[
+  {
+    "prompt": "Exemple de question à remplacer par votre contenu validé",
+    "explanation": "Explication pédagogique affichée après la réponse.",
+    "category": "Langue française",
+    "difficulty": "Apprenti",
+    "answers": ["Réponse A", "Réponse B", "Réponse C", "Réponse D"],
+    "correctIndex": 0,
+    "isCivic": false
+  },
+  {
+    "prompt": "Exemple de question civique à remplacer par votre contenu validé",
+    "explanation": "Explication issue de vos sources officielles et vérifiées.",
+    "category": "Citoyenneté",
+    "difficulty": "Lettré",
+    "civicTheme": "Droits et devoirs",
+    "questionType": "knowledge",
+    "answers": ["Réponse A", "Réponse B", "Réponse C", "Réponse D"],
+    "correctIndex": 1,
+    "isCivic": true
+  }
+]
